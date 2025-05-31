@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity 0.8.26;
+pragma solidity 0.8.23;
 
 /**
  * @title  Subset of Wrapped M Token interface required for source contracts.

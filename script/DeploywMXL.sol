@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-
-pragma solidity 0.8.26;
+pragma solidity 0.8.23;
 
 import { Script } from "forge-std/Script.sol";
 
@@ -12,20 +11,19 @@ import {
     TransparentUpgradeableProxy
 } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
-contract DeploywMXLScript is Script {
+contract DeploywMXL is Script {
     address internal constant _M_TOKEN = 0x0000000000000000000000000000000000000000; // Mainnet M Token
-    address internal constant _WMXL_ADMIN = 0xc2b3075fb1ac9f5ecc1e2c07da8bccc43e7083fb; // Last multisig
+    address internal constant _WMXL_ADMIN = 0xC2b3075fB1AC9f5eCc1e2C07dA8bcCC43e7083fb; // Last multisig
+    address internal constant _WRAPPED_M_ADDRESS = 0x0000000000000000000000000000000000000000; // Mainnet Wrapped M
 
     function run() external {
+        if (_M_TOKEN == address(0)) revert("M_TOKEN not set");
+        if (_WMXL_ADMIN == address(0)) revert("WMXL_ADMIN not set");
+        if (_WRAPPED_M_ADDRESS == address(0)) revert("WRAPPED_M_ADDRESS not set");
+
         address deployer_ = vm.rememberKey(vm.envUint("PRIVATE_KEY"));
 
         vm.startBroadcast(deployer_);
-
-        // Deploy Wrapped M Token implementation
-        address wrappedMImplementation = address(new WrappedMToken(_M_TOKEN, _WMXL_ADMIN));
-        
-        // Deploy Wrapped M Token proxy
-        address wrappedMAddress = address(new TransparentUpgradeableProxy(wrappedMImplementation, _WMXL_ADMIN, ""));
 
         // Deploy RegistryAccess implementation
         address registryAccessImplementation = address(new RegistryAccess());
@@ -43,7 +41,7 @@ contract DeploywMXLScript is Script {
         // Deploy wMXL proxy and initialize with the deployed registry access
         bytes memory wMXLData = abi.encodeWithSignature(
             "initialize(address,address)",
-            wrappedMAddress,
+            _WRAPPED_M_ADDRESS,
             registryAccessAddress
         );
         address(new TransparentUpgradeableProxy(wMXLImplementation, _WMXL_ADMIN, wMXLData));
