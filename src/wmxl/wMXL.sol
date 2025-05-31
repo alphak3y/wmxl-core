@@ -33,8 +33,8 @@ import {
 contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
     /* ============ Structs, Variables, Modifiers ============ */
 
-    /// @custom:storage-location erc7201:UsualM.storage.v0
-    struct UsualMStorageV0 {
+    /// @custom:storage-location erc7201:LastM.storage.v0
+    struct LastMStorageV0 {
         // 1st slot
         uint96 mintCap;
         address wrappedM;
@@ -44,18 +44,18 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
         mapping(address => bool) isBlacklisted;
     }
 
-    // keccak256(abi.encode(uint256(keccak256("UsualM.storage.v0")) - 1)) & ~bytes32(uint256(0xff))
+    // keccak256(abi.encode(uint256(keccak256("LastM.storage.v0")) - 1)) & ~bytes32(uint256(0xff))
     // solhint-disable-next-line
-    bytes32 public constant UsualMStorageV0Location =
+    bytes32 public constant LastMStorageV0Location =
         0xaf0b0773f61ce9af1982ff9a13506e1d8ad90f04391405f722e2ad38e8ffd300;
 
-    /// @notice The number of decimals for the UsualM token.
+    /// @notice The number of decimals for the LastM token.
     uint8 public constant DECIMALS_NUMBER = 6;
 
     /// @notice Returns the storage struct of the contract.
     /// @return $ .
-    function _usualMStorageV0() internal pure returns (UsualMStorageV0 storage $) {
-        bytes32 position = UsualMStorageV0Location;
+    function _lastMStorageV0() internal pure returns (LastMStorageV0 storage $) {
+        bytes32 position = LastMStorageV0Location;
         // solhint-disable-next-line no-inline-assembly
         assembly {
             $.slot := position
@@ -79,7 +79,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
         __ERC20Pausable_init();
         __ERC20Permit_init("Last Wrapped M");
 
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
         $.wrappedM = wrappedM_;
         $.registryAccess = registryAccess_;
     }
@@ -114,7 +114,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
     function unwrap(address recipient, uint256 amount) external returns (uint256) {
         if (amount == 0) revert InvalidAmount();
 
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // Check that caller has a valid access role before proceeding.
         if (!IRegistryAccess($.registryAccess).hasRole(WMXL_UNWRAP, msg.sender)) revert NotAuthorized();
@@ -126,7 +126,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
 
     /// @inheritdoc IwMXL
     function setMintCap(uint256 newMintCap) external {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // Check that caller has a valid access role before proceeding.
         if (!IRegistryAccess($.registryAccess).hasRole(WMXL_MINTCAP_ALLOCATOR, msg.sender)) revert NotAuthorized();
@@ -141,7 +141,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
 
     /// @inheritdoc IwMXL
     function pause() external {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // Check that caller has a valid access role before proceeding.
         if (!IRegistryAccess($.registryAccess).hasRole(WMXL_PAUSE, msg.sender)) revert NotAuthorized();
@@ -151,7 +151,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
 
     /// @inheritdoc IwMXL
     function unpause() external {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // Check that caller has a valid access role before proceeding.
         if (!IRegistryAccess($.registryAccess).hasRole(WMXL_UNPAUSE, msg.sender)) revert NotAuthorized();
@@ -164,7 +164,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
     function blacklist(address account) external {
         if (account == address(0)) revert ZeroAddress();
 
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // Check that caller has a valid access role before proceeding.
         if (!IRegistryAccess($.registryAccess).hasRole(BLACKLIST_ROLE, msg.sender)) revert NotAuthorized();
@@ -182,7 +182,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
     function unBlacklist(address account) external {
         if (account == address(0)) revert ZeroAddress();
 
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // Check that caller has a valid access role before proceeding.
         if (!IRegistryAccess($.registryAccess).hasRole(BLACKLIST_ROLE, msg.sender)) revert NotAuthorized();
@@ -204,25 +204,25 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
 
     /// @inheritdoc IwMXL
     function wrappedM() public view returns (address) {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
         return $.wrappedM;
     }
 
     /// @inheritdoc IwMXL
     function registryAccess() public view returns (address) {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
         return $.registryAccess;
     }
 
     /// @inheritdoc IwMXL
     function mintCap() public view returns (uint256) {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
         return $.mintCap;
     }
 
     /// @inheritdoc IwMXL
     function isBlacklisted(address account) external view returns (bool) {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
         return $.isBlacklisted[account];
     }
 
@@ -237,14 +237,14 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
     /* ============ Internal Interactive Functions ============ */
 
     /**
-     * @dev    Wraps `amount` WrappedM from `account` into UsualM for `recipient`.
+     * @dev    Wraps `amount` WrappedM from `account` into LastM for `recipient`.
      * @param  account    The account from which WrappedM is deposited.
-     * @param  recipient  The account receiving the minted UsualM.
+     * @param  recipient  The account receiving the minted LastM.
      * @param  amount     The amount of WrappedM deposited.
-     * @return wrapped    The amount of UsualM minted.
+     * @return wrapped    The amount of LastM minted.
      */
     function _wrap(address account, address recipient, uint256 amount) internal returns (uint256 wrapped) {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
 
         // NOTE: The behavior of `IWrappedMLike.transferFrom` is known, so its return can be ignored.
         IWrappedMLike($.wrappedM).transferFrom(account, address(this), amount);
@@ -253,10 +253,10 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
     }
 
     /**
-     * @dev    Unwraps `amount` UsualM from `account` into WrappedM for `recipient`.
-     * @param  account   The account from which UsualM is burned.
+     * @dev    Unwraps `amount` LastM from `account` into WrappedM for `recipient`.
+     * @param  account   The account from which LastM is burned.
      * @param  recipient The account receiving the withdrawn WrappedM.
-     * @param  amount    The amount of UsualM burned.
+     * @param  amount    The amount of LastM burned.
      * @return unwrapped The amount of WrappedM tokens withdrawn.
      */
     function _unwrap(address account, address recipient, uint256 amount) internal returns (uint256 unwrapped) {
@@ -277,7 +277,7 @@ contract wMXL is ERC20PausableUpgradeable, ERC20PermitUpgradeable, IwMXL {
         address to,
         uint256 amount
     ) internal virtual override(ERC20PausableUpgradeable, ERC20Upgradeable) {
-        UsualMStorageV0 storage $ = _usualMStorageV0();
+        LastMStorageV0 storage $ = _lastMStorageV0();
         if ($.isBlacklisted[from] || $.isBlacklisted[to]) revert Blacklisted();
 
         // Check if minting would exceed the mint cap

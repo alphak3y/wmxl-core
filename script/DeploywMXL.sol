@@ -13,8 +13,8 @@ import {
 } from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 contract DeploywMXLScript is Script {
-    address internal constant _M_TOKEN = 0x437cc33344a0B27A429f795ff6B469C72698B291; // Mainnet M Token
-    address internal constant _USUAL_ADMIN = 0x6e9d65eC80D69b1f508560Bc7aeA5003db1f7FB7; // Usual default admin
+    address internal constant _M_TOKEN = 0x0000000000000000000000000000000000000000; // Mainnet M Token
+    address internal constant _WMXL_ADMIN = 0xc2b3075fb1ac9f5ecc1e2c07da8bccc43e7083fb; // Last multisig
 
     function run() external {
         address deployer_ = vm.rememberKey(vm.envUint("PRIVATE_KEY"));
@@ -22,10 +22,10 @@ contract DeploywMXLScript is Script {
         vm.startBroadcast(deployer_);
 
         // Deploy Wrapped M Token implementation
-        address wrappedMImplementation = address(new WrappedMToken(_M_TOKEN, _USUAL_ADMIN));
+        address wrappedMImplementation = address(new WrappedMToken(_M_TOKEN, _WMXL_ADMIN));
         
         // Deploy Wrapped M Token proxy
-        address wrappedMAddress = address(new TransparentUpgradeableProxy(wrappedMImplementation, _USUAL_ADMIN, ""));
+        address wrappedMAddress = address(new TransparentUpgradeableProxy(wrappedMImplementation, _WMXL_ADMIN, ""));
 
         // Deploy RegistryAccess implementation
         address registryAccessImplementation = address(new RegistryAccess());
@@ -33,9 +33,9 @@ contract DeploywMXLScript is Script {
         // Deploy RegistryAccess proxy and initialize
         bytes memory registryAccessData = abi.encodeWithSignature(
             "initialize(address)",
-            _USUAL_ADMIN
+            _WMXL_ADMIN
         );
-        address registryAccessAddress = address(new TransparentUpgradeableProxy(registryAccessImplementation, _USUAL_ADMIN, registryAccessData));
+        address registryAccessAddress = address(new TransparentUpgradeableProxy(registryAccessImplementation, _WMXL_ADMIN, registryAccessData));
 
         // Deploy wMXL implementation
         address wMXLImplementation = address(new wMXL());
@@ -46,7 +46,7 @@ contract DeploywMXLScript is Script {
             wrappedMAddress,
             registryAccessAddress
         );
-        address(new TransparentUpgradeableProxy(wMXLImplementation, _USUAL_ADMIN, wMXLData));
+        address(new TransparentUpgradeableProxy(wMXLImplementation, _WMXL_ADMIN, wMXLData));
 
         vm.stopBroadcast();
     }
