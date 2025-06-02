@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
-pragma solidity 0.8.26;
+pragma solidity 0.8.23;
 
 import {
     IERC20Metadata
-} from "../../../lib/openzeppelin-contracts/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 /**
  * @title  Usual WrappedM Extension.
  * @author M^0 Labs
  */
-interface IUsualM is IERC20Metadata {
+interface IwMXL is IERC20Metadata {
     /* ============ Events ============ */
 
     /// @notice Emitted when address is added to blacklist.
@@ -52,22 +52,22 @@ interface IUsualM is IERC20Metadata {
     /* ============ Interactive Functions ============ */
 
     /**
-     * @notice Wraps `amount` WrappedM from the caller into UsualM for `recipient`.
-     * @param  recipient The account receiving the minted UsualM.
+     * @notice Wraps `amount` WrappedM from the caller into LastM for `recipient`.
+     * @param  recipient The account receiving the minted LastM.
      * @param  amount    The amount of WrappedM deposited.
-     * @return           The amount of UsualM minted.
+     * @return           The amount of LastM minted.
      */
     function wrap(address recipient, uint256 amount) external returns (uint256);
 
     /**
-     * @notice Wraps `amount` WrappedM from the caller into UsualM for `recipient`, using a permit.
-     * @param  recipient The account receiving the minted UsualM.
+     * @notice Wraps `amount` WrappedM from the caller into LastM for `recipient`, using a permit.
+     * @param  recipient The account receiving the minted LastM.
      * @param  amount    The amount of WrappedM deposited.
      * @param  deadline  The last timestamp where the signature is still valid.
      * @param  v         An ECDSA secp256k1 signature parameter (EIP-2612 via EIP-712).
      * @param  r         An ECDSA secp256k1 signature parameter (EIP-2612 via EIP-712).
      * @param  s         An ECDSA secp256k1 signature parameter (EIP-2612 via EIP-712).
-     * @return           The amount of UsualM minted.
+     * @return           The amount of LastM minted.
      */
     function wrapWithPermit(
         address recipient,
@@ -79,10 +79,10 @@ interface IUsualM is IERC20Metadata {
     ) external returns (uint256);
 
     /**
-     * @notice Unwraps `amount` UsualM from the caller into WrappedM for `recipient`.
+     * @notice Unwraps `amount` LastM from the caller into WrappedM for `recipient`.
      * @dev Can only be called by the `USUAL_M_UNWRAP`.
      * @param  recipient The account receiving the withdrawn WrappedM.
-     * @param  amount    The amount of UsualM burned.
+     * @param  amount    The amount of LastM burned.
      * @return           The amount of WrappedM withdrawn.
      */
     function unwrap(address recipient, uint256 amount) external returns (uint256);
